@@ -13,6 +13,8 @@ server, nothing leaves your network.
 
 It is two apps: one for macOS 14 or later, one for Android 11 or later.
 
+**Download:** [AndroMac for Mac](https://github.com/androidilicious/andromac/releases/latest/download/AndroMac-mac.zip) · [AndroMac for Android](https://github.com/androidilicious/andromac/releases/latest/download/AndroMac-android.apk) · [all releases](https://github.com/androidilicious/andromac/releases)
+
 ## Set up
 
 Allow about ten minutes the first time. Steps 1 to 4 give you notifications, messages, clipboard, files and
@@ -20,7 +22,7 @@ photos. Step 5 adds the phone screen and app windows.
 
 ### 1. Install the Mac app
 
-Download `AndroMac-mac.zip` from the latest release (or build it, see [Build](#build)), unzip it and move
+Download [AndroMac-mac.zip](https://github.com/androidilicious/andromac/releases/latest/download/AndroMac-mac.zip) (or build it, see [Build](#build)), unzip it and move
 `AndroMac.app` to Applications. The app is not notarized by Apple, so run this once in Terminal before opening it:
 
     xattr -dr com.apple.quarantine /Applications/AndroMac.app
@@ -29,7 +31,7 @@ Open it and allow **local network access** and **notifications** when macOS asks
 
 ### 2. Install the phone app
 
-Download `app-debug.apk` on the phone and open it. Android asks you to allow installs from your browser or
+Download [AndroMac-android.apk](https://github.com/androidilicious/andromac/releases/latest/download/AndroMac-android.apk) on the phone and open it. Android asks you to allow installs from your browser or
 file manager; allow it and tap **Install**. If Play Protect warns about an unknown developer, choose
 **Install anyway**.
 
