@@ -21,8 +21,11 @@ struct AndroMacApp: App {
                 .frame(minWidth: 900, minHeight: 620)
         }
         .defaultSize(width: 1120, height: 740)
-        MenuBarExtra("AndroMac", systemImage: link.connected ? "iphone.gen3.radiowaves.left.and.right" : "iphone.gen3.slash") {
+        MenuBarExtra {
             MenuContent().environmentObject(link)
+        } label: {
+            Image(nsImage: menuBarIcon(connected: link.connected))
+                .accessibilityLabel(link.connected ? "AndroMac, phone connected" : "AndroMac, phone not connected")
         }
     }
 }
@@ -51,4 +54,35 @@ func chooseFiles(_ link: Link) {
     panel.canChooseDirectories = false
     NSApp.activate(ignoringOtherApps: true)
     if panel.runModal() == .OK { panel.urls.forEach(link.sendFile) }
+}
+
+/// The AM monogram for the menu bar. A template image, so macOS colours it for light and dark menu bars;
+/// it is drawn faint while no phone is linked.
+func menuBarIcon(connected: Bool) -> NSImage {
+    let side: CGFloat = 18
+    let image = NSImage(size: NSSize(width: side, height: side), flipped: true) { _ in
+        // Designed on a 512 grid; the mark spans x 92...420 and y 136...384. Fit it to the icon with a small margin.
+        let k = (side - 2) / 372
+        func p(_ x: CGFloat, _ y: CGFloat) -> NSPoint { NSPoint(x: 1 + (x - 70) * k, y: 1 + (y - 74) * k) }
+        // One transparency layer, so the two strokes fade as a single shape instead of showing their overlap.
+        let ctx = NSGraphicsContext.current!.cgContext
+        ctx.setAlpha(connected ? 1 : 0.4)
+        ctx.beginTransparencyLayer(auxiliaryInfo: nil)
+        defer { ctx.endTransparencyLayer() }
+        NSColor.black.setStroke()
+        let m = NSBezierPath()
+        m.lineWidth = 46 * k
+        m.lineCapStyle = .round
+        m.lineJoinStyle = .round
+        m.move(to: p(92, 384)); m.line(to: p(176, 136)); m.line(to: p(256, 330)); m.line(to: p(336, 136)); m.line(to: p(420, 384))
+        m.stroke()
+        let bar = NSBezierPath()
+        bar.lineWidth = 38 * k
+        bar.lineCapStyle = .round
+        bar.move(to: p(136, 286)); bar.line(to: p(214, 286))
+        bar.stroke()
+        return true
+    }
+    image.isTemplate = true
+    return image
 }

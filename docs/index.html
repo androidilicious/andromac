@@ -6,6 +6,10 @@
 <title>AndroMac: use your Android phone from your Mac</title>
 <meta name="description" content="AndroMac links an Android phone to a Mac over your own Wi-Fi: phone screen, apps, notifications, messages, clipboard, files and photos. Free and open source.">
 <link rel="icon" href="img/icon.png">
+<script>
+  // Apply a saved theme choice before the page paints, so it does not flash the other theme.
+  try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
@@ -17,9 +21,12 @@
     --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
+  /* Dark follows the system unless the visitor picked a theme with the header button. */
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0d1312; --surface: #161e1c; --fg: #e9efed; --muted: #97a6a1; --line: #25302d; --code-bg: #070b0a; color-scheme: dark }
+    :root:not([data-theme="light"]) { --bg: #0d1312; --surface: #161e1c; --fg: #e9efed; --muted: #97a6a1; --line: #25302d; --code-bg: #070b0a; color-scheme: dark }
   }
+  :root[data-theme="dark"] { --bg: #0d1312; --surface: #161e1c; --fg: #e9efed; --muted: #97a6a1; --line: #25302d; --code-bg: #070b0a; color-scheme: dark }
+  :root[data-theme="light"] { color-scheme: light }
   * { box-sizing: border-box }
   body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6 }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px }
@@ -35,6 +42,9 @@
   header nav { margin-left: auto; display: flex; gap: 20px; font-size: 15px }
   header nav a { color: var(--fg); text-decoration: none }
   header nav a:hover { color: var(--brand) }
+  header nav { align-items: center }
+  #theme { font: inherit; font-size: 14px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer }
+  #theme:hover { border-color: var(--brand) }
 
   .hero { padding: 44px 0 30px; display: grid; gap: 30px }
   .hero h1 { font-size: clamp(36px, 6vw, 62px); max-width: 15ch }
@@ -56,7 +66,7 @@
   .gallery figcaption { font-size: 14px; color: var(--muted); padding: 8px 4px 0 }
 
   .steps { counter-reset: step; display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; max-width: 760px }
-  .steps li { counter-increment: step; display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: start }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 14px; align-items: start }
   .steps li::before { content: counter(step); width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 600; display: grid; place-items: center; font-family: var(--display) }
   .steps h3 { font-size: 18px; margin: 4px 0 4px }
   .steps p { margin: 0; color: var(--muted); font-size: 16px }
@@ -68,7 +78,7 @@
   details p { color: var(--muted); margin: 10px 0 0 }
 
   footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--muted); font-size: 14px }
-  @media (max-width: 560px) { header nav a.wide { display: none } }
+  @media (max-width: 560px) { header nav a.wide { display: none } header nav { gap: 12px } }
 </style>
 </head>
 <body>
@@ -81,6 +91,7 @@
       <a class="wide" href="#setup">Set up</a>
       <a class="wide" href="#questions">Questions</a>
       <a href="https://github.com/androidilicious/andromac">GitHub</a>
+      <button id="theme" type="button" aria-label="Switch between light and dark">Light</button>
     </nav>
   </header>
 
@@ -145,5 +156,22 @@ brew install --cask android-platform-tools</pre></div></li>
     AndroMac is open source under the Apache License 2.0. Copyright 2026 Diwas Puri. The phone window uses <a href="https://github.com/Genymobile/scrcpy">scrcpy</a>. Android is a trademark of Google LLC; Mac and macOS are trademarks of Apple Inc. This project is not affiliated with either.
   </footer>
 </div>
+<script>
+  (function () {
+    var root = document.documentElement, button = document.getElementById("theme");
+    function current() {
+      return root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    // The button names the theme it switches to.
+    function label() { button.textContent = current() === "dark" ? "Light mode" : "Dark mode" }
+    button.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next) } catch (e) {}
+      label();
+    });
+    label();
+  })();
+</script>
 </body>
 </html>
