@@ -1,0 +1,11 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+mac/AndroMac.xcodeproj/
+mac/AndroMac/Info.plist
+mac/AndroMac/AndroMac.entitlements
+mac/Camera/Info.plist
+mac/Camera/Camera.entitlements
+.DS_Store

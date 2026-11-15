@@ -1,0 +1,65 @@
+# Generate the Xcode project with:  brew install xcodegen && xcodegen
+name: AndroMac
+options:
+  bundleIdPrefix: app.andromac
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "0.1"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    # Set your Apple Developer team ID here (needed only for the virtual webcam extension).
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: YES
+targets:
+  AndroMac:
+    type: application
+    platform: macOS
+    sources: [AndroMac]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.andromac.AndroMac
+        PRODUCT_NAME: AndroMac
+    info:
+      path: AndroMac/Info.plist
+      properties:
+        CFBundleDisplayName: AndroMac
+        CFBundleIconFile: AppIcon
+        LSApplicationCategoryType: public.app-category.utilities
+        NSLocalNetworkUsageDescription: AndroMac talks to your paired Android phone over your local network.
+        NSBonjourServices: [_andromac._tcp]
+        NSCameraUsageDescription: AndroMac feeds your phone's camera into its virtual webcam.
+    entitlements:
+      path: AndroMac/AndroMac.entitlements
+      properties:
+        com.apple.developer.system-extension.install: true
+        com.apple.security.device.camera: true
+    dependencies:
+      - target: AndroMacCamera
+        embed: true
+  AndroMacCamera:
+    type: system-extension
+    platform: macOS
+    sources: [Camera]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.andromac.AndroMac.Camera
+        # A system extension bundle must be named after its bundle identifier.
+        PRODUCT_NAME: $(PRODUCT_BUNDLE_IDENTIFIER)
+    info:
+      path: Camera/Info.plist
+      properties:
+        CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
+        CFBundleDisplayName: AndroMac Camera
+        NSSystemExtensionUsageDescription: Makes your Android phone's camera available as a webcam.
+        CMIOExtension:
+          CMIOExtensionMachServiceName: $(TeamIdentifierPrefix)app.andromac.camera
+    entitlements:
+      path: Camera/Camera.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - $(TeamIdentifierPrefix)app.andromac

@@ -1,0 +1,14 @@
+AndroMac
+Copyright 2026 Diwas Puri
+
+This product includes software developed by Diwas Puri.
+Original project: AndroMac, an Android phone to Mac link.
+
+If you redistribute this software or a work based on it, the Apache License 2.0
+(section 4) requires you to keep this NOTICE file and the copyright notices, and
+to state any changes you made.
+
+Third-party software used at run time, not included in this repository:
+  scrcpy (https://github.com/Genymobile/scrcpy), Apache License 2.0,
+  Copyright Genymobile and Romain Vimont. The Mac app runs it as a separate
+  program for the native phone window.

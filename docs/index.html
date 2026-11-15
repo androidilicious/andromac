@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AndroMac: use your Android phone from your Mac</title>
+<meta name="description" content="AndroMac links an Android phone to a Mac over your own Wi-Fi: phone screen, apps, notifications, messages, clipboard, files and photos. Free and open source.">
+<link rel="icon" href="img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+  /* Layout: one column of bands. The product screenshot carries the hero; everything after is short and scannable. */
+  :root {
+    --bg: #f3f6f5; --surface: #ffffff; --fg: #12201d; --muted: #586964; --line: #dae2df;
+    --brand: #179e87; --brand-deep: #0d6b8c; --code-bg: #10201d; --code-fg: #d9efe9;
+    --display: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d1312; --surface: #161e1c; --fg: #e9efed; --muted: #97a6a1; --line: #25302d; --code-bg: #070b0a; color-scheme: dark }
+  }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6 }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px }
+  a { color: var(--brand); text-underline-offset: 3px }
+  a:focus-visible, .btn:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.12; text-wrap: balance; margin: 0 }
+  h2 { font-size: clamp(26px, 3.4vw, 36px) }
+  img { max-width: 100%; height: auto; display: block }
+
+  header { display: flex; align-items: center; gap: 12px; padding: 22px 0 }
+  header img { width: 38px; height: 38px }
+  header strong { font-family: var(--display); font-size: 20px }
+  header nav { margin-left: auto; display: flex; gap: 20px; font-size: 15px }
+  header nav a { color: var(--fg); text-decoration: none }
+  header nav a:hover { color: var(--brand) }
+
+  .hero { padding: 44px 0 30px; display: grid; gap: 30px }
+  .hero h1 { font-size: clamp(36px, 6vw, 62px); max-width: 15ch }
+  .hero p { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 54ch; margin: 0 }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px }
+  .btn { display: inline-block; padding: 13px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); color: var(--fg); background: var(--surface) }
+  .btn.primary { background: linear-gradient(135deg, #1fb596, #0d6b8c); color: #fff; border-color: transparent }
+  .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 60px -30px rgba(13, 107, 140, .45); background: var(--surface) }
+
+  section { padding: 56px 0 }
+  .lead { color: var(--muted); max-width: 60ch; margin: 10px 0 28px }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; padding: 0; margin: 0; list-style: none }
+  .features li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px }
+  .features h3 { font-size: 18px; margin-bottom: 6px }
+  .features p { margin: 0; color: var(--muted); font-size: 15px }
+
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px }
+  .gallery figure { margin: 0 }
+  .gallery figcaption { font-size: 14px; color: var(--muted); padding: 8px 4px 0 }
+
+  .steps { counter-reset: step; display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; max-width: 760px }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: start }
+  .steps li::before { content: counter(step); width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 600; display: grid; place-items: center; font-family: var(--display) }
+  .steps h3 { font-size: 18px; margin: 4px 0 4px }
+  .steps p { margin: 0; color: var(--muted); font-size: 16px }
+  pre { background: var(--code-bg); color: var(--code-fg); font-family: var(--mono); font-size: 14px; padding: 12px 14px; border-radius: 10px; overflow-x: auto; margin: 10px 0 0 }
+
+  details { border-top: 1px solid var(--line); padding: 14px 0; max-width: 760px }
+  details:last-of-type { border-bottom: 1px solid var(--line) }
+  summary { font-weight: 600; cursor: pointer }
+  details p { color: var(--muted); margin: 10px 0 0 }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--muted); font-size: 14px }
+  @media (max-width: 560px) { header nav a.wide { display: none } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="img/icon.png" alt="">
+    <strong>AndroMac</strong>
+    <nav>
+      <a class="wide" href="#features">Features</a>
+      <a class="wide" href="#setup">Set up</a>
+      <a class="wide" href="#questions">Questions</a>
+      <a href="https://github.com/androidilicious/andromac">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Use your Android phone from your Mac.</h1>
+    <p>Your phone's screen, apps, notifications, messages, clipboard, files and photos, in one Mac app. It runs over your own Wi-Fi: no account, no cloud, nothing leaves your network. Free and open source.</p>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/androidilicious/andromac/releases">Download</a>
+      <a class="btn" href="#setup">How to set it up</a>
+    </div>
+    <div class="shot"><img src="img/light-home.jpg" width="1600" height="1047" alt="The AndroMac home screen on a Mac, showing a connected Galaxy phone, quick actions, feature status and recent notifications."></div>
+  </div>
+
+  <section id="features">
+    <h2>What it does</h2>
+    <p class="lead">The things a Windows PC can do with an Android phone, for people who use a Mac instead.</p>
+    <ul class="features">
+      <li><h3>Phone screen</h3><p>The whole phone in a Mac window with mouse, keyboard and sound. The phone's own display stays dark.</p></li>
+      <li><h3>Apps in windows</h3><p>Open one phone app per Mac window and keep the phone free.</p></li>
+      <li><h3>Notifications</h3><p>See them on the Mac as they arrive. Reply or dismiss without picking the phone up.</p></li>
+      <li><h3>Text messages</h3><p>Read your SMS conversations, reply, and start new ones from a full keyboard.</p></li>
+      <li><h3>Shared clipboard</h3><p>Copy on one device, paste on the other. Works in both directions.</p></li>
+      <li><h3>Files and photos</h3><p>Drag files to the phone, send files to the Mac, and browse the phone's photos full size.</p></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>A closer look</h2>
+    <p class="lead">Screens shown with sample data.</p>
+    <div class="gallery">
+      <figure><div class="shot"><img loading="lazy" src="img/light-apps.jpg" width="1600" height="1047" alt="A grid of the phone's apps in the Mac app."></div><figcaption>Apps: click one to open it in its own window.</figcaption></figure>
+      <figure><div class="shot"><img loading="lazy" src="img/dark-notifications.jpg" width="1600" height="1047" alt="Phone notifications listed on the Mac in dark mode, with reply fields."></div><figcaption>Notifications, with inline reply. Dark mode included.</figcaption></figure>
+      <figure><div class="shot"><img loading="lazy" src="img/light-files.jpg" width="1600" height="1047" alt="The Files screen with a drop area and a list of transfers."></div><figcaption>Files: drop them in to send them to the phone.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="setup">
+    <h2>Set up in five steps</h2>
+    <p class="lead">About ten minutes the first time. Steps 1 to 4 cover notifications, messages, clipboard, files and photos. Step 5 adds the phone screen and app windows. The <a href="https://github.com/androidilicious/andromac#set-up">README</a> has every detail and a troubleshooting table.</p>
+    <ol class="steps">
+      <li><div><h3>Install the Mac app</h3><p>Download it, move it to Applications, and run this once in Terminal because the app is not notarized by Apple:</p><pre>xattr -dr com.apple.quarantine /Applications/AndroMac.app</pre></div></li>
+      <li><div><h3>Install the phone app</h3><p>Download the APK on the phone, open it, and allow the install when Android asks.</p></div></li>
+      <li><div><h3>Pair</h3><p>With both on the same Wi-Fi, tap Scan the QR code on your Mac in the phone app and point it at the Mac's screen.</p></div></li>
+      <li><div><h3>Turn on the phone features</h3><p>In the phone app, tap Permissions, Notification sync and Remote control until each shows a tick.</p></div></li>
+      <li><div><h3>Enable the phone screen (one-time, with a cable)</h3><p>Install two free tools on the Mac, switch on USB debugging in the phone's Developer options, plug the phone in once and tap Allow. After that it works wirelessly.</p><pre>brew install scrcpy
+brew install --cask android-platform-tools</pre></div></li>
+    </ol>
+  </section>
+
+  <section id="questions">
+    <h2>Questions</h2>
+    <div style="height:18px"></div>
+    <details><summary>Why does the phone screen need USB debugging?</summary><p>Phone makers give screen and input access only to apps they build in, which is how Microsoft's Phone Link works on Samsung phones. For any other app, Android's USB debugging option is the supported way to let a computer you trust control the phone. You switch it on once.</p></details>
+    <details><summary>Is that safe?</summary><p>The phone only accepts computers you approve on its "Allow USB debugging" prompt. Wireless debugging stays on while the phone is linked to your Mac. Switching off USB debugging in Developer options undoes all of it.</p></details>
+    <details><summary>Does anything go through a server?</summary><p>No. The two devices talk directly over your local network, encrypted with a key that only exists in the QR code you scan. There is no account and no cloud service.</p></details>
+    <details><summary>Which phones and Macs work?</summary><p>Android 11 or later and macOS 14 or later. So far it has been used on one Samsung phone and tested on an Android 14 emulator, so other phones may have rough edges.</p></details>
+    <details><summary>What is missing?</summary><p>Phone calls from the Mac, and RCS, MMS or group chats in Messages. It is an early project; see the status section of the README for what has and has not been tested.</p></details>
+  </section>
+
+  <footer>
+    AndroMac is open source under the Apache License 2.0. Copyright 2026 Diwas Puri. The phone window uses <a href="https://github.com/Genymobile/scrcpy">scrcpy</a>. Android is a trademark of Google LLC; Mac and macOS are trademarks of Apple Inc. This project is not affiliated with either.
+  </footer>
+</div>
+</body>
+</html>

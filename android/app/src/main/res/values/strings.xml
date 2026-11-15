@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AndroMac</string>
+    <string name="send_to_mac">Send to Mac</string>
+    <string name="send_clipboard">Clipboard to Mac</string>
+    <string name="input_service">AndroMac remote control</string>
+    <string name="input_service_desc">Lets your paired Mac tap, swipe and type on this phone while you mirror the screen. AndroMac does not read screen content for any other purpose.</string>
+</resources>
