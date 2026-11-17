@@ -458,6 +458,21 @@ struct NotificationsView: View {
             }
         }
         .toolbar { Button("Clear list") { link.clearNotifs() }.disabled(link.notifs.isEmpty) }
+        .safeAreaInset(edge: .top) {
+            if !link.bannersAllowed {
+                HStack(spacing: 8) {
+                    Image(systemName: "bell.slash.fill").foregroundStyle(.orange)
+                    Text("macOS is not letting AndroMac show banners, so notifications only appear in this list.")
+                    Spacer()
+                    Button("Open Notification Settings") {
+                        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!)
+                    }
+                }
+                .padding(.horizontal, 16).padding(.vertical, 8)
+                .background(Color.orange.opacity(0.12))
+            }
+        }
+        .onAppear { link.checkBanners() }
     }
 }
 

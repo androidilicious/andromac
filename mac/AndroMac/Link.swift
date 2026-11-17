@@ -74,6 +74,8 @@ final class Link: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
     @Published var cameraOn = false
     @Published var accessibilityOn = false
     @Published var notificationsOn = false
+    /** False when macOS is not letting this app show banners (denied, or reset after an update). */
+    @Published var bannersAllowed = true
     @Published var battery: Int?
     @Published var charging = false
     /** Launchable apps as reported by the phone app, and their icons as they arrive. */
@@ -119,7 +121,7 @@ final class Link: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
     func start() {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
-        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        center.requestAuthorization(options: [.alert, .sound]) { _, _ in self.checkBanners() }
         let reply = UNTextInputNotificationAction(identifier: "reply", title: "Reply", options: [])
         center.setNotificationCategories([
             UNNotificationCategory(identifier: "reply", actions: [reply], intentIdentifiers: []),
@@ -408,6 +410,14 @@ final class Link: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
         c.sound = .default
         c.categoryIdentifier = n.canReply ? "reply" : "plain"
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: n.id, content: c, trigger: nil))
+    }
+
+    /// Reads whether macOS lets this app show notification banners.
+    func checkBanners() {
+        UNUserNotificationCenter.current().getNotificationSettings { s in
+            let ok = s.authorizationStatus == .authorized || s.authorizationStatus == .provisional
+            DispatchQueue.main.async { self.bannersAllowed = ok }
+        }
     }
 
     func reply(_ key: String, _ text: String) { send("reply", ["key": key, "text": text]) }

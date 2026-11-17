@@ -8,7 +8,19 @@ struct AndroMacApp: App {
     @StateObject private var native = Native()
     @StateObject private var nav = Nav()
 
-    init() { Link.shared.start() }
+    init() {
+        // Only one copy may run. A second one (say, the build-folder copy next to the one in Applications) would
+        // share the pairing key, and the phone would link to whichever it found first, leaving the other
+        // window looking connected to nothing.
+        let me = NSRunningApplication.current
+        let twins = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "app.andromac.AndroMac")
+            .filter { $0 != me && !$0.isTerminated }
+        if let running = twins.first {
+            running.activate()
+            exit(0)
+        }
+        Link.shared.start()
+    }
 
     var body: some Scene {
         Window("AndroMac", id: "main") {
