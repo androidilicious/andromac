@@ -147,8 +147,9 @@ struct ContentView: View {
             List(selection: $nav.pane) {
                 Section { row(.home); row(.mirror); row(.apps) }
                 Section("Stay in touch") {
-                    row(.notifications).badge(link.notifs.count)
-                    row(.messages).badge(unread)
+                    // The tag goes on last, outside the badge, so the row stays selectable.
+                    Label(Pane.notifications.rawValue, systemImage: Pane.notifications.icon).badge(link.notifs.count).tag(Pane.notifications)
+                    Label(Pane.messages.rawValue, systemImage: Pane.messages.icon).badge(unread).tag(Pane.messages)
                 }
                 Section("Share") { row(.clipboard); row(.files); row(.photos) }
                 Section("More") { row(.contacts); row(.camera) }
@@ -187,6 +188,8 @@ struct ContentView: View {
         }
         // Each time the phone links up, find it for the native window. The second try covers a phone that has
         // just restarted and needs a few seconds to bring wireless debugging back.
+        // Fetch conversations as soon as the phone links, so the unread badge is right before Messages is opened.
+        .onChange(of: link.connected) { _, on in if on { link.loadSMSThreads() } }
         .onChange(of: link.phoneIP) { _, ip in
             guard let ip else { return }
             native.refresh(phoneIP: ip)
@@ -861,10 +864,11 @@ struct PhotosView: View {
         }
         .toolbar { Button { link.loadPhotos() } label: { Label("Refresh", systemImage: "arrow.clockwise") }.disabled(!link.connected) }
         .onAppear { if link.photos.isEmpty, link.connected { link.loadPhotos() } }
-        // Presented by a flag, not by item: moving to the next photo must not close and reopen the sheet.
-        .sheet(isPresented: Binding(get: { viewing != nil }, set: { if !$0 { viewing = nil } })) {
-            PhotoViewer(photo: $viewing)
+        // The viewer covers this pane only. A sheet would block the whole window, sidebar included, until closed.
+        .overlay {
+            if viewing != nil { PhotoViewer(photo: $viewing).transition(.opacity) }
         }
+        .animation(.easeOut(duration: 0.15), value: viewing != nil)
     }
 }
 
@@ -926,7 +930,7 @@ struct PhotoViewer: View {
                     }
                 }
             }
-            .frame(minWidth: 720, minHeight: 480)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             HStack {
                 Button { step(-1) } label: { Image(systemName: "chevron.left") }
                     .keyboardShortcut(.leftArrow, modifiers: []).disabled((index ?? 0) == 0)
@@ -943,8 +947,8 @@ struct PhotoViewer: View {
                 Button("Done") { photo = nil }.keyboardShortcut(.cancelAction).buttonStyle(.borderedProminent)
             }
             .padding(12)
+            .background(.bar)
         }
-        .frame(idealWidth: 980, idealHeight: 720)
         .onAppear(perform: load)
         .onChange(of: photo) { _, _ in load() }
         .onChange(of: link.fullPhotos) { _, _ in load() }
